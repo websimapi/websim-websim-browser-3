@@ -1,3 +1,55 @@
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const path = require('path');
+
+let mainWindow;
+
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 1280,
+    height: 800,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      // The <webview> tag needs to be enabled.
+      webviewTag: true,
+      // In a real app, contextIsolation should be true and nodeIntegration false for security.
+      // For this example, we'll keep it simple.
+      contextIsolation: true,
+      nodeIntegration: false,
+    }
+  });
+
+  mainWindow.loadFile('index.html');
+
+  // Open DevTools for debugging if needed.
+  // mainWindow.webContents.openDevTools();
+}
+
+app.whenReady().then(() => {
+  createWindow();
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
+});
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+
+// IPC listener for showing the error modal
+ipcMain.on('show-blocked-navigation-dialog', (event, blockedUrl) => {
+  dialog.showMessageBox(mainWindow, {
+    type: 'error',
+    title: 'Navigation Blocked',
+    message: `This browser is restricted to websim:// pages only.`,
+    detail: `You attempted to navigate to: ${blockedUrl}`
+  });
+});
+
 const addressBar = document.getElementById('address-bar');
 const contentFrame = document.getElementById('content-frame');
 const backBtn = document.getElementById('back-btn');
@@ -99,7 +151,6 @@ window.addEventListener('click', (e) => {
     }
 });
 
-
 // Custom navigation event from iframe
 window.addEventListener('message', (event) => {
     // Basic security check
@@ -110,7 +161,5 @@ window.addEventListener('message', (event) => {
     }
 });
 
-
 // Initial navigation
 navigateTo('websim://home');
-

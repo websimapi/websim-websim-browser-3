@@ -1,0 +1,42 @@
+{
+  "name": "websim-browser",
+  "version": "1.0.0",
+  "description": "A secure browser for the Websim network.",
+  "main": "main.js",
+  "author": "Websim Inc.",
+  "license": "ISC",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^28.2.3",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.websim.browser",
+    "productName": "Websim Browser",
+    "files": [
+      "main.js",
+      "index.html",
+      "style.css",
+      "websim_*.html",
+      "websim_*.css",
+      "websim_*.js",
+      "websim_logo.png"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "mac": {
+      "target": "dmg"
+    }
+  }
+}
